@@ -1,0 +1,17 @@
+{
+  "name": "signal-hyperframes-showcase",
+  "private": true,
+  "version": "1.0.0",
+  "description": "HyperFrames HTML/GSAP showcase scene",
+  "scripts": {
+    "preview": "hyperframes preview",
+    "lint": "hyperframes lint",
+    "render": "hyperframes render --output ../renders/hyperframes-showcase.mp4 --fps 30 --quality high"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5"
+  },
+  "devDependencies": {
+    "hyperframes": "latest"
+  }
+}

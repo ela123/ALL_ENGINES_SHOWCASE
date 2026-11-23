@@ -1,0 +1,2 @@
+import React from 'react'; import {Composition} from 'remotion'; import {SignalShowcase,IntegratedShowcase} from './Showcase';
+export const Root:React.FC=()=> <><Composition id="SignalShowcase" component={SignalShowcase} durationInFrames={900} fps={30} width={1920} height={1080}/><Composition id="IntegratedShowcase" component={IntegratedShowcase} durationInFrames={1800} fps={30} width={1920} height={1080}/></>;
