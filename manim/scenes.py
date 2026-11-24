@@ -3,6 +3,8 @@ import numpy as np
 
 class RiskAndCompounding(Scene):
     def construct(self):
+        self.camera.fps = int(float(self.camera.fps))
+
         # 3Blue1Brown-style explanatory scene: risk, distribution, compounding.
         title = Text("RISK IS A SYSTEM", font_size=52, color=WHITE)
         title.to_edge(UP, buff=0.55)
@@ -38,28 +40,57 @@ class RiskAndCompounding(Scene):
 
 
 class LeverageSurface(ThreeDScene):
+    default_frame_orientation = (-48, 68)
+
     def construct(self):
+        self.camera.fps = int(float(self.camera.fps))
+
+        # ManimGL v1.7.2 camera frame configuration
+        # Intended viewing parameters: phi = 68 degrees, theta = -48 degrees, distance = 9
+        self.frame.set_euler_angles(theta=-48 * DEG, phi=68 * DEG)
+        self.frame.set_height(9)
+
         heading = Text("LEVERAGE / EXPOSURE SURFACE", font_size=36, color=TEAL)
+        heading.fix_in_frame()
         heading.to_edge(UP, buff=0.3)
-        self.add_fixed_in_frame_mobjects(heading)
-        self.set_camera_orientation(phi=68 * DEG, theta=-48 * DEG, distance=9)
+        self.add(heading)
+
         axes = ThreeDAxes(
-            x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-2, 4, 1),
-            width=7, height=6, depth=5,
+            x_range=(-3, 3, 1),
+            y_range=(-3, 3, 1),
+            z_range=(-2, 4, 1),
+            width=7,
+            height=6,
+            depth=5,
             axis_config={"stroke_color": GREY_B, "stroke_width": 1.5},
         )
+
         surface = ParametricSurface(
-            lambda u, v: axes.c2p(u, v, 0.32 * u * u - 0.38 * v * v),
-            u_range=(-2.4, 2.4), v_range=(-2.4, 2.4), resolution=(18, 18),
-            color=BLUE, opacity=0.72,
+            uv_func=lambda u, v: axes.c2p(u, v, 0.32 * u * u - 0.38 * v * v),
+            u_range=(-2.4, 2.4),
+            v_range=(-2.4, 2.4),
+            resolution=(24, 24),
+            fill_color=BLUE_D,
+            fill_opacity=0.75,
+            stroke_color=TEAL,
+            stroke_width=0.5,
         )
+
+        mesh = SurfaceMesh(surface)
+        mesh.set_stroke(TEAL_A, width=1.0, opacity=0.6)
+
         self.play(ShowCreation(axes), run_time=1.1)
-        self.play(ShowCreation(surface), run_time=2.0)
-        self.begin_ambient_camera_rotation(rate=0.10)
-        self.wait(3.5)
-        self.stop_ambient_camera_rotation()
+        self.play(FadeIn(surface), ShowCreation(mesh, lag_ratio=0.01), run_time=2.0)
+
+        # Smooth 3D ambient camera orbit using ManimGL's frame.animate
+        self.play(
+            self.frame.animate.increment_theta(-50 * DEG).increment_phi(10 * DEG),
+            run_time=3.5,
+            rate_func=linear,
+        )
+
         caption = Text("AMPLIFICATION / NON-LINEAR RISK", font_size=26, color=YELLOW)
+        caption.fix_in_frame()
         caption.to_edge(DOWN, buff=0.35)
-        self.add_fixed_in_frame_mobjects(caption)
-        self.play(FadeIn(caption), run_time=0.5)
+        self.play(FadeIn(caption), run_time=0.6)
         self.wait(1.0)
